@@ -17,9 +17,9 @@ import AdminUserList from './views/AdminUserList.vue'
 
 Vue.use(Router)
 
-export default new Router({
+const router = new Router({
   routes: [
-    {path: '/login',name: 'login',component: Login},
+    {path: '/login',name: 'login',component: Login,meta: {isPublic: true}},
     {
       path: '/',
       name: 'main',
@@ -55,3 +55,14 @@ export default new Router({
     }
   ]
 })
+
+// to: 即将进入的页面  from: 当前所在页面
+router.beforeEach((to,from,next)=>{
+  if(!to.meta.isPublic && !localStorage.token){
+    // 如果token不存在且isPublish为false，就返回login页面
+    return next('/login')
+  }
+  next()
+})
+
+export default router

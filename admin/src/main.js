@@ -9,6 +9,21 @@ Vue.config.productionTip = false
 import http from './http'
 Vue.prototype.$http = http
 
+Vue.mixin({
+  computed: {
+    uploadUrl(){
+      return this.$http.defaults.baseURL+'/upload'
+    }
+  },
+  methods: {
+    getAuthHeaders(){
+      return {
+        Authorization: `Bearer ${localStorage.token || ''}`
+      }
+    }
+  },
+})
+
 // 将路由挂载到#app下
 new Vue({
   router,

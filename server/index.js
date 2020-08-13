@@ -2,6 +2,9 @@ const express = require('express')
 
 const app = express()
 
+// 在当前app的实例上设置一个全局
+app.set('secret','jksdajhdue')
+
 app.use(require('cors')())
 app.use(express.json())
 // 托管静态文件
