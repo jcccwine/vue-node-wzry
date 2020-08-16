@@ -65,9 +65,7 @@
       
       <el-main>
         <!-- 路由容器 -->
-        <router-view>
-          
-        </router-view>
+        <router-view :key="$router.path"></router-view>
       </el-main>
     </el-container>
   </el-container>
@@ -79,7 +77,6 @@
     color: #333;
     line-height: 60px;
   }
-  
   .el-aside {
     color: #333;
   }

@@ -4,7 +4,8 @@ import router from './router'
 
 // 创建axios示例
 const http = axios.create({
-  baseURL: 'http://localhost:3000/admin/api'
+  baseURL: process.env.VUE_APP_API_URL || '/admin/api',
+  // baseURL: 'http://localhost:3000/admin/api'
 })
 
 // 添加请求拦截器

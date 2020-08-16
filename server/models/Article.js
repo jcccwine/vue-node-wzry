@@ -9,6 +9,8 @@ const schema = new mogoose.Schema({
     type: mogoose.SchemaTypes.ObjectId,ref: 'Category'
   }],
   body: {type: String}
+},{
+  timestamps: true
 })
 // 创建数据库表
 module.exports = mogoose.model('Article',schema)

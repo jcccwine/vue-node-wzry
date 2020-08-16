@@ -2,8 +2,8 @@
   <div class="about">
     <h1>{{ id? `编辑`:`新增` }}英雄</h1>
     <el-form label-width="120px" @submit.native.prevent="save" style="margin-top:1.5rem">
-      <el-tabs value="skills" type="border-card">
-        <el-tab-pane label="基础信息">
+      <el-tabs value="basic" type="border-card">
+        <el-tab-pane label="基础信息" name="basic">
           <el-form-item label="名称">
             <el-input v-model="model.name"></el-input>
           </el-form-item>
@@ -13,13 +13,27 @@
           <el-form-item label="头像">
             <el-upload
               class="avatar-uploader"
-              :action=" $http.defaults.baseURL + '/upload'"
+              :action="uploadUrl"
+              :headers="getAuthHeaders()"
               :show-file-list="false"
-              :on-success="afterUpload">
+              :on-success="res => $set(model, 'pic', res.url)">
               <img v-if="model.pic" :src="model.pic" class="avatar">
               <i v-else class="el-icon-plus avatar-uploader-icon"></i>
             </el-upload>
           </el-form-item>
+          <!-- banner -->
+          <el-form-item label="Banner">
+            <el-upload
+              class="avatar-uploader"
+              :action="uploadUrl"
+              :headers="getAuthHeaders()"
+              :show-file-list="false"
+              :on-success="res => $set(model, 'banner', res.url)">
+              <img v-if="model.banner" :src="model.banner" class="avatar">
+              <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+            </el-upload>
+          </el-form-item>
+          <!-- 类型 -->
           <el-form-item label="类型">
             <el-select v-model="model.categories" multiple >
               <el-option v-for="item in categories" :key="item._id"
@@ -71,10 +85,17 @@
               <el-form-item label="名称">
                 <el-input v-model="item.name"></el-input>
               </el-form-item>
+              <el-form-item label="冷却值">
+                <el-input v-model="item.delay"></el-input>
+              </el-form-item>
+              <el-form-item label="消耗">
+                <el-input v-model="item.cost"></el-input>
+              </el-form-item>
               <el-form-item label="图标">
                 <el-upload
                   class="avatar-uploader"
-                  :action=" $http.defaults.baseURL + '/upload'"
+                  :action="uploadUrl"
+                  :headers="getAuthHeaders()"
                   :show-file-list="false"
                   :on-success="res=>{$set(item,'icon',res.url)}">
                   <img v-if="item.icon" :src="item.icon" class="avatar">
@@ -90,6 +111,29 @@
               <el-form-item>
                 <!-- model.skills是一个数组，利用数组的splice方法裁减掉当前想要删除的技能 -->
                 <el-button size="small" type="danger" @click="model.skills.splice(i,1)">删除</el-button>
+              </el-form-item>
+            </el-col>
+          </el-row>
+        </el-tab-pane>
+
+        <el-tab-pane label="最佳搭档" name="parterns">
+          <el-button size="small" @click="model.parterns.push({})"><i class="el-icon-plus"></i>添加英雄</el-button>
+          <el-row type="flex" style="flex-wrap:wrap">
+            <el-col :md="12" v-for="(item,i) in model.parterns" :key="i">
+              <el-form-item label="英雄">
+                <el-select filterable v-model="item.hero">
+                  <el-option 
+                  v-for="hero in heroes" 
+                  :key="hero._id"
+                  :value="hero._id"
+                  :label="hero.name"></el-option>
+                </el-select>
+              </el-form-item>
+              <el-form-item label="描述">
+                <el-input type="textarea" v-model="item.description"></el-input>
+              </el-form-item>
+              <el-form-item>
+                <el-button size="small" type="danger" @click="model.parterns.splice(i,1)">删除</el-button>
               </el-form-item>
             </el-col>
           </el-row>
@@ -115,19 +159,16 @@
           pic: '',
           scores: {
             difficult: 0,
-            skills: 0,
-            attack: 0,
-            survive: 0
-          }
+          },
+          skills: [],
+          parterns: []
         },
+        heroes: [],
         categories: [],
         items: [],
       }
     },
     methods: {
-      afterUpload(res){
-        this.model.pic = res.url
-      },
       // 判断是新建还是编辑，如果是编辑的话编辑后的数据要在数据库里更新
       async save(){        
         let res;// eslint-disable-line no-unused-vars
@@ -156,9 +197,14 @@
         const res = await this.$http.get(`rest/items`)// eslint-disable-line no-unused-vars
         this.items = res.data
       },
+      async fetchHeroes(){
+        const res = await this.$http.get(`rest/hero`)// eslint-disable-line no-unused-vars
+        this.heroes = res.data
+      },
     },
     created() {
       this.fetchItems()
+      this.fetchHeroes()
       this.fetchCategories()
       // 如果有了id，就执行fetch方法
       this.id && this.fetch()

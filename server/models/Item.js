@@ -1,7 +1,7 @@
-const mogoose = require('mongoose')
+const mongoose = require('mongoose')
 
 // 创建表的规则
-const schema = new mogoose.Schema({
+const schema = new mongoose.Schema({
   name: {
     type: String
   },
@@ -10,4 +10,4 @@ const schema = new mogoose.Schema({
   }
 })
 // 创建数据库表
-module.exports = mogoose.model('Item',schema)
+module.exports = mongoose.model('Item',schema)
