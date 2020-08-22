@@ -48,6 +48,8 @@ module.exports = app => {
   app.use('/admin/api/rest/:resource',authMiddleware(),resourceMiddleware(), router)
 
   const multer = require('multer')
+  const multer = require('multer');
+  // const MAO = require('multer-aliyun-oss');
   const upload = multer({dest: __dirname + '/../../uploads'})
   app.post('/admin/api/upload', authMiddleware(),upload.single('file'),async (req,res)=>{
     const file = req.file
