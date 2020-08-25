@@ -18,6 +18,8 @@ import AdminUserList from './views/AdminUserList.vue'
 Vue.use(Router)
 
 const router = new Router({
+  mode: 'history',
+  base: '/admin',
   routes: [
     {path: '/login',name: 'login',component: Login,meta: {isPublic: true}},
     {
